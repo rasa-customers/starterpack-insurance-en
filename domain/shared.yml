@@ -1,0 +1,49 @@
+
+version: "3.1"
+
+slots: # list all you slots, it can be in different files per use case for better structure
+  customer_id:
+    type: text
+    mappings:
+      - type: from_llm
+    initial_value: 123 # suppose we always have the customer ID
+  customer_first_name:
+    type: text
+    mappings:
+      - type: custom
+        action: action_get_customer_info
+
+responses:
+  utter_session_start:
+    - text: |
+        Hey {customer_first_name} 👋
+        I'm Poly, your AI assistant at Universal Insurance 🔐
+        I can help you start a claim and check its status.
+        What would you like to do?
+
+  utter_end_conversation:
+    - text: |
+        Glad, I helped ✨
+        Have a nice day! 
+
+  utter_fallback:
+    - text: |
+        I appreciate your question! 
+        That's a bit outside my expertise, but I'm here to help if your internet is slow or if you need help understanding your bill.
+        Would you like assistance with that?
+      metadata:
+        rephrase: true
+
+  utter_bot_challenge:
+  - text: |
+      I'm an AI assistant designed to assist you quickly and efficiently. 
+      If you ever need to speak with a human agent, just let me know!
+
+  utter_more_help_needed_handoff_pattern: # add more information here, if you need this to connect to specific channel..
+    - text: |
+            Please hold on while I connect you to our expert 📲  
+      image: "https://cdn-icons-png.flaticon.com/512/1042/1042127.png"
+
+  utter_connect_to_human:
+    - text: |
+        Let me connect you to our human support managers. They will help you further!

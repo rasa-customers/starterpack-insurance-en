@@ -1,0 +1,25 @@
+flows:
+  file_a_claim:
+    description: This flow helps a user file a claim
+    steps:
+      - action: utter_recap
+      # - collect: bill_month
+      #   ask_before_filling: False
+      # - action: action_verify_bill_by_date
+      # - collect: breakdown_cost
+      #   description: |
+      #     This slot is boolean variable. it holds one of two possible values: true or false
+      #     (breakdown_cost = True, breakdown_cost = False), and if the user says "yup," it should be considered True, while "nope" should be considered False 
+      #     (e.g., breakdown_cost = True for "yup", breakdown_cost = False for "nope").
+      #   ask_before_filling: true # This can be useful some LLMs will prefill bool slots here we make it mandatory for the bot to ask the user
+      #   next:
+      #     - if: slots.breakdown_cost # it has to be 'slots' with an 's', this means breakdown_cost is True
+      #       then:
+      #         - action: action_recap_bill
+      #         - collect: more_bill_details
+      #           next:
+      #             - if: slots.more_bill_details
+      #               then:
+      #                 - action: utter_provide_bill_sources
+      #                   next: "END"
+      #             - else: issue_solved_section # this will call "issue_solved_section" section
