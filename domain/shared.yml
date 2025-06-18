@@ -1,6 +1,9 @@
 
 version: "3.1"
 
+actions: 
+  - action_get_customer_info
+
 slots: # list all you slots, it can be in different files per use case for better structure
   customer_id:
     type: text
@@ -10,8 +13,7 @@ slots: # list all you slots, it can be in different files per use case for bette
   customer_first_name:
     type: text
     mappings:
-      - type: custom
-        action: action_get_customer_info
+      - type: controlled
 
 responses:
   utter_session_start:

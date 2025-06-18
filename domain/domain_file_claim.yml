@@ -1,0 +1,85 @@
+version: "3.1"
+
+actions:
+ - action_list_policies
+ - action_ask_policy_name
+ - action_claim_summary
+
+slots:
+  policy_name:
+    type: text
+    mappings:
+    - type: controlled
+  policy_num:
+    type: text
+    mappings:
+    - type: controlled
+  claim_description:
+    type: text
+    mappings:
+    - type: from_llm
+  incident_date:
+    type: text
+    mappings:
+    - type: from_llm
+    validation:
+      rejections:
+        - if: not (slots.incident_date matches "^(0[1-9]|1[0,1,2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d{2}$")
+          utter: utter_invalid_date
+  incident_time:
+    type: text
+    mappings:
+    - type: from_llm
+  incident_location:
+    type: text
+    mappings:
+    - type: from_llm
+  additional_claim_info:
+    type: text
+    mappings:
+    - type: from_llm
+  verify_claim_details:
+    type: bool
+    mappings:
+    - type: controlled
+  claim_submission:
+    type: bool
+    mappings:
+    - type: controlled
+  
+
+responses:
+  utter_select_policy_name:
+    - text: Which policy would you like to file a claim under?
+  utter_ask_claim_description:
+    - text: Could you please describe what happened and what caused the damage?
+  utter_ask_incident_date:
+    - text: What was the exact date of the incident? Please use mm/dd/yyyy format.
+  utter_ask_incident_time:
+    - text: What was the exact time of the incident?
+  utter_ask_incident_location:
+    - text: Where did the incident happen?
+  utter_ask_additional_claim_info:
+    - text: Please write the contact details of any witnesses and the number of police report if available.
+  utter_ask_verify_claim_details:
+    - text: Does everything look correct?
+      buttons:
+      - text: Yes
+        payload: /SetSlots(verify_claim_details=true)
+      - text: No
+        payload: /SetSlots(verify_claim_details=false)
+  utter_ask_claim_submission:
+    - text: Thank you. Shall I submit this claim for you?
+      buttons:
+      - text: Yes
+        payload: /SetSlots(claim_submission=true)
+      - text: No
+        payload: /SetSlots(claim_submission=false)
+  utter_claim_submitted:
+    - text: | 
+        I have submitted your claim number 12345.
+        An adjuster will be assigned to your claim 
+  utter_invalid_date:
+  - text: Please provide the date in the format (mm/dd/yyyy)
+  utter_ask_policy_num:
+  - text: Please provide your policy number

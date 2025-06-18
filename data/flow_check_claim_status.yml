@@ -1,0 +1,56 @@
+flows:
+  check_claim_status:
+    description: This flow helps a user check the status of an existing claim
+    steps:
+      - id: collect_claim_number
+        collect: claim_number
+        next: acknowledge_claim_number
+      - id: acknowledge_claim_number
+        action: utter_acknowledge_claim_number
+        next: action_check_claim_status
+      - id: action_check_claim_status
+        action: action_check_claim_status
+        next:
+          - if: slots.claim_status = 0
+            then: adjustor_to_assign
+          - if: slots.claim_status = 1
+            then: adjustor_assigned
+          - if: slots.claim_status = 2
+            then: inspection_schedule
+          - if: slots.claim_status = 3
+            then: claim_accepted
+          - if: slots.claim_status = 4
+            then: claim_rejected
+          - else: END
+      - id: adjustor_to_assign
+        action: utter_adjustor_to_assign
+        next: END
+      - id: adjustor_assigned
+        action: utter_adjustor_assigned
+        next: END
+      - id: inspection_schedule
+        collect: schedule_inspection
+        next: 
+          - if: slots.schedule_inspection
+            then: collect_inspection_date
+          - else: END
+      - id: collect_inspection_date
+        collect: inspection_date
+        next: acknowledge_inspection_scheduled
+      - id: acknowledge_inspection_scheduled
+        action: utter_acknowledge_inspection_scheduled
+        next: END
+      - id: claim_accepted
+        collect: claim_accepted_questions
+        next: 
+          - if: slots.claim_accepted_questions
+            then: handoff
+          - else: END
+      - id: claim_rejected
+        collect: claim_rejected_questions
+        next: 
+          - if: slots.claim_rejected_questions
+            then: handoff
+          - else: END
+      - id: handoff
+        link: pattern_human_handoff

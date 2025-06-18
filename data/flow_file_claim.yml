@@ -2,24 +2,47 @@ flows:
   file_a_claim:
     description: This flow helps a user file a claim
     steps:
-      - action: utter_recap
-      # - collect: bill_month
-      #   ask_before_filling: False
-      # - action: action_verify_bill_by_date
-      # - collect: breakdown_cost
-      #   description: |
-      #     This slot is boolean variable. it holds one of two possible values: true or false
-      #     (breakdown_cost = True, breakdown_cost = False), and if the user says "yup," it should be considered True, while "nope" should be considered False 
-      #     (e.g., breakdown_cost = True for "yup", breakdown_cost = False for "nope").
-      #   ask_before_filling: true # This can be useful some LLMs will prefill bool slots here we make it mandatory for the bot to ask the user
-      #   next:
-      #     - if: slots.breakdown_cost # it has to be 'slots' with an 's', this means breakdown_cost is True
-      #       then:
-      #         - action: action_recap_bill
-      #         - collect: more_bill_details
-      #           next:
-      #             - if: slots.more_bill_details
-      #               then:
-      #                 - action: utter_provide_bill_sources
-      #                   next: "END"
-      #             - else: issue_solved_section # this will call "issue_solved_section" section
+      - id: action_list_policies
+        next: collect_policy_name
+        action: action_list_policies
+      - id: collect_policy_name
+        next: collect_policy_num
+        collect: policy_name #uses action_ask_policy_name to generate dynamic buttons
+        ask_before_filling: true
+      - id: collect_policy_num
+        next: collect_claim_description
+        collect: policy_num #uses action_ask_policy_name to generate dynamic buttons
+      - id: collect_claim_description
+        next: collect_incident_date
+        collect: claim_description
+      - id: collect_incident_date
+        next: collect_incident_time
+        collect: incident_date
+      - id: collect_incident_time
+        next: colect_incident_location
+        collect: incident_time
+      - id: colect_incident_location
+        next: collect_additional_claim_info
+        collect: incident_location
+      - id: collect_additional_claim_info
+        next: action_claim_summary
+        collect: additional_claim_info
+      - id: action_claim_summary
+        action: action_claim_summary
+        next: collect_verify_claim
+      - id: collect_verify_claim
+        collect: verify_claim_details
+        next: 
+          - if: slots.verify_claim_details
+            then: collect_claim_submission
+          - else: handoff
+      - id: collect_claim_submission
+        collect: claim_submission
+        next:
+          - if: slots.claim_submission
+            then: 
+              - action: utter_claim_submitted
+                next: END
+          - else: handoff
+      - id: handoff
+        link: pattern_human_handoff

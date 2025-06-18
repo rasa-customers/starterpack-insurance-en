@@ -1,0 +1,6 @@
+flows:
+  flow_view_policies:
+    description: This flow helps a user view their active insurance policies
+    steps:
+      - action: utter_retrieving_policy
+      - action: action_view_policies

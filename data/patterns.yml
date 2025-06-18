@@ -17,8 +17,7 @@ flows:
     description: all flows have been completed and there is nothing else to be done
     name: pattern completed
     steps:
-      - noop: True # this means no operation and when this command is detected CALM won't do any actions. it can also be replaced by an utter.
-        next: END
+      - action: utter_can_do_something_else
 
   pattern_session_start: # this is a pattern that will be triggered in the begining of the session
     description: Flow for starting the conversation

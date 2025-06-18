@@ -11,7 +11,8 @@
 # https://rasa.com/docs/rasa-pro/concepts/custom-actions
 
 action_endpoint:
-  actions_module: "actions"
+  # actions_module: "actions"
+  url: http://localhost:5055/webhook
 
 # Tracker store which is used to store the conversations.
 # By default the conversations are stored in memory.
@@ -47,8 +48,12 @@ action_endpoint:
 # https://rasa.com/docs/rasa-pro/concepts/contextual-response-rephraser
 # To enable the rephraser, remove the comment symbols in the lines below.
 
-#nlg:
-#   type: rephrase
+nlg:
+  type: rephrase
+  llm:
+    model_group: gpt-4o-mini
+  prompt: prompts/rephraser_demo_personality_prompt.jinja2
+  rephrase_all: False
 
 model_groups:
   - id: openai-gpt-4o
@@ -57,7 +62,14 @@ model_groups:
         model: gpt-4o-2024-11-20
         request_timeout: 7
         max_tokens: 256
+  # If using mistral-large, remember to set the environment variable MISTRAL_API_KEY 
+  # More information here: https://rasa.com/docs/pro/tutorial#setup
   - id: mistral-large
     models:
       - provider: mistral
         model: mistral-large-2411
+  - id: gpt-4o-mini
+    models:
+      - provider: openai
+        model: gpt-4o-mini-2024-07-18
+        temperature: 0.3

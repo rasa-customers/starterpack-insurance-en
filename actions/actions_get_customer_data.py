@@ -8,7 +8,7 @@ class ActionGetCustomerInfo(Action):
 
     def run(self, dispatcher, tracker, domain):
         #Load CSV file
-        file_path = "csvs/customers.csv"  # get information from your DBs
+        file_path = "db/customers.csv"  # get information from your DBs
         df = pd.read_csv(file_path)
         customer_id = tracker.get_slot("customer_id")
 

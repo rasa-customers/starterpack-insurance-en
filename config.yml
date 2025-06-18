@@ -1,9 +1,16 @@
 recipe: default.v1
 language: en
 pipeline:
-  - name: CompactLLMCommandGenerator
-    llm:
-      model_group: openai-gpt-4o
+- name: CompactLLMCommandGenerator
+  llm:
+    model_group: openai-gpt-4o   #you can change the model group to mistral-large to test how different models work
 
 policies:
-  - name: FlowPolicy
+- name: FlowPolicy
+- name: EnterpriseSearchPolicy
+  vector_store:
+    type: "faiss"
+    source: "./docs"
+  llm:
+    model_group: openai-gpt-4o
+assistant_id: 20250613-142913-blocking-regression

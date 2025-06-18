@@ -1,0 +1,16 @@
+test_cases:
+- test_case: test pattern search
+  steps:
+    - user: "What is a deductible?"
+      assertions:
+        - generative_response_is_grounded:
+            threshold: 0.90
+            ground_truth: "A deductible is the amount of money you are responsible for paying out-of-pocket before your insurance coverage begins to pay. For example, if you have a $1,000 deductible and a covered claim for $10,000 in damages, you would pay the first $1,000, and your insurer would pay the remaining $9,000."
+    - utter: utter_can_do_something_else
+    - user: "Does my insurance cover me if I drive someone else's car?"
+      assertions:
+        - flow_completed:
+            flow_id: "pattern_search"
+        - generative_response_is_grounded:
+            threshold: 0.90
+            ground_truth: "In the US, insurance typically follows the car first. So, if you borrow a friend's car and have an accident, their auto insurance would be the primary coverage. Your own insurance may act as secondary coverage if their policy limits are exceeded. However, this can vary, so you should always check your policy details."

@@ -1,0 +1,67 @@
+version: "3.1"
+
+actions:
+ - action_check_claim_status
+
+slots:
+  claim_number:
+    type: text
+    mappings:
+      - type: from_llm
+  claim_status:
+    type: text
+    mappings:
+      - type: controlled
+  adjustor_date:
+    type: text
+    mappings:
+      - type: controlled
+  schedule_inspection:
+    type: bool
+    mappings:
+      - type: from_llm
+  inspection_date:
+    type: text
+    mappings: 
+      - type: from_llm
+  claim_accepted_questions:
+    type: bool
+    mappings:
+      - type: from_llm
+  claim_rejected_questions:
+    type: bool
+    mappings:
+      - type: from_llm
+      
+responses:
+  utter_ask_claim_number:
+    - text: Could you please write the claim number?
+  utter_acknowledge_claim_number:
+    - text: Thank you. I will check the claim status for you. One moment please.
+  utter_adjustor_to_assign:
+    - text: |
+        We are assigning an adjustor to your case, it normally takes 24-48 h since submitting the claim.
+        The adjustor will be assigned by {adjustor_date}.
+  utter_adjustor_assigned:
+    - text: |
+        An adjustor has been assigned to your case. 
+        Here is the contact information if you'd like to ask questions:
+        John Doe
+        +1 222 333 4567
+  utter_ask_schedule_inspection:
+    - text: |
+        We are in the process of scheduling an inspection to see your damages. 
+        Would you like to submit dates and times for the inspection appointment?
+      buttons:
+        - title: Yes
+          payload: /SetSlots(schedule_inspection=true)
+        - title: No
+          payload: /SetSlots(schedule_inspection=false)
+  utter_ask_inspection_date:
+    - text: Which date and time would you prefer?
+  utter_acknowledge_inspection_scheduled:
+    - text: Thank you, I've sent your request for scheduling the inspection on {inspection_date}.
+  utter_ask_claim_accepted_questions:
+    - text: We have approved your claim, the details were sent to you by email. Do you have any questions about it?
+  utter_ask_claim_rejected_questions:
+    - text: Unfortunately, your claim has been rejected. Would you like to know the details of this decision?

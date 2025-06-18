@@ -1,0 +1,8 @@
+version: "3.1"
+
+actions:
+  - action_view_policies
+
+responses:
+  utter_retrieving_policy:
+    - text: Let me retrieve your policy information, just a moment please.

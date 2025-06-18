@@ -1,0 +1,5 @@
+version: "3.1"
+
+responses: 
+  utter_can_do_something_else:
+  - text: Let me know if you would like to check your claim status or file a claim. I'll be here ready to help! 😊
