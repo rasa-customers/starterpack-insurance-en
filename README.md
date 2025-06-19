@@ -17,7 +17,7 @@ This repository contains a Rasa chatbot designed to assist customers with filing
   - Status is provided to the user
   - User has the option to be connected to a human agent
 
-  This can be used as a starting point to create your own insurance assistant or get aideas on the features you may want to implement. It's free for you to copy and use locally.
+This can be used as a starting point to create your own insurance assistant or get aideas on the features you may want to implement. It's free for you to copy and use locally.
 
 # Recommendations
 Before leveraging this assistant it is recommended you are familiar with Rasa's CALM framework. 
@@ -138,7 +138,7 @@ Here's a brief description of the directories and files in the project root:
       Would you like to submit dates and times for the inspection appointment?
   - **User**: No
 
-##  **Third example**:<br> List policies & Enterprise Search
+##  **Fourth example**:<br> List policies & Enterprise Search
   - **Bot**: Hey Serena 👋
         I'm Poly, your AI assistant at Universal Insurance 🔐
         I can help you start a claim and check its status.
