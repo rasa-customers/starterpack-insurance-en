@@ -2,7 +2,7 @@ version: "3.1"
 
 actions:
  - action_list_policies
- - action_ask_policy_name
+ - action_ask_policy_num
  - action_claim_summary
 
 slots:
@@ -41,11 +41,11 @@ slots:
   verify_claim_details:
     type: bool
     mappings:
-    - type: controlled
+    - type: from_llm
   claim_submission:
     type: bool
     mappings:
-    - type: controlled
+    - type: from_llm
   
 
 responses:
@@ -60,26 +60,38 @@ responses:
   utter_ask_incident_location:
     - text: Where did the incident happen?
   utter_ask_additional_claim_info:
-    - text: Please write the contact details of any witnesses and the number of police report if available.
+    - condition:
+        - type: slot
+          name: policy_name
+          value: Car
+      text: Please write the contact details of any witnesses and the number of police report if available.
+    - condition:
+        - type: slot
+          name: policy_name
+          value: Homeowner
+      text: Please add any additional information that you would like to share.
+    - text: Please add any additional information that you would like to share.
   utter_ask_verify_claim_details:
     - text: Does everything look correct?
       buttons:
-      - text: Yes
+      - title: Yes
         payload: /SetSlots(verify_claim_details=true)
-      - text: No
+      - title: No
         payload: /SetSlots(verify_claim_details=false)
   utter_ask_claim_submission:
     - text: Thank you. Shall I submit this claim for you?
       buttons:
-      - text: Yes
+      - title: Yes
         payload: /SetSlots(claim_submission=true)
-      - text: No
+      - title: No
         payload: /SetSlots(claim_submission=false)
   utter_claim_submitted:
     - text: | 
         I have submitted your claim number 12345.
         An adjuster will be assigned to your claim 
   utter_invalid_date:
-  - text: Please provide the date in the format (mm/dd/yyyy)
-  utter_ask_policy_num:
-  - text: Please provide your policy number
+    - text: Please provide the date in the format (mm/dd/yyyy)
+  utter_ask_policy_name:
+    - text: Please provide your policy name
+  utter_invalid_policy:
+    - text: Please select a valid policy.

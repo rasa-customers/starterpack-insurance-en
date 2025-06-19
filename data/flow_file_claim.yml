@@ -1,32 +1,85 @@
 flows:
   file_a_claim:
     description: This flow helps a user file a claim
+    persisted_slots: #Slots whose value should be persisted after the flow ends. 
+      - policy_num
+      - policy_name
     steps:
       - id: action_list_policies
-        next: collect_policy_name
         action: action_list_policies
-      - id: collect_policy_name
         next: collect_policy_num
-        collect: policy_name #uses action_ask_policy_name to generate dynamic buttons
-        ask_before_filling: true
       - id: collect_policy_num
-        next: collect_claim_description
-        collect: policy_num #uses action_ask_policy_name to generate dynamic buttons
+        collect: policy_num #uses action_ask_policy_num to generate dynamic buttons
+        ask_before_filling: true
+        next: collect_policy_name
+      - id: collect_policy_name
+        collect: policy_name #uses action_ask_policy_num to generate dynamic buttons
+        next: 
+          - if: slots.policy_name = 'Car'
+            then: auto_flow
+          - if: slots.policy_name = 'Homeowner'
+            then: home_flow
+          - else: utter_invalid_policy
+      - id: auto_flow
+        link: auto_claim
+      - id: home_flow
+        link: home_claim
+      - id: utter_invalid_policy
+        action: utter_invalid_policy
+        next: END
+
+  auto_claim:
+    description: This flow guides a user through filing an auto claim
+    if: false #flow guard prevents flow from starting unless it is linked
+    steps:
       - id: collect_claim_description
-        next: collect_incident_date
         collect: claim_description
+        next: collect_incident_date
       - id: collect_incident_date
-        next: collect_incident_time
         collect: incident_date
+        next: collect_incident_time
       - id: collect_incident_time
-        next: colect_incident_location
         collect: incident_time
+        next: colect_incident_location
       - id: colect_incident_location
-        next: collect_additional_claim_info
         collect: incident_location
+        next: collect_additional_claim_info
       - id: collect_additional_claim_info
-        next: action_claim_summary
         collect: additional_claim_info
+        next: action_claim_summary
+      - id: action_claim_summary
+        action: action_claim_summary
+        next: collect_verify_claim
+      - id: collect_verify_claim
+        collect: verify_claim_details
+        next: 
+          - if: slots.verify_claim_details
+            then: collect_claim_submission
+          - else: handoff
+      - id: collect_claim_submission
+        collect: claim_submission
+        next:
+          - if: slots.claim_submission
+            then: 
+              - action: utter_claim_submitted
+                next: END
+          - else: handoff
+      - id: handoff
+        link: pattern_human_handoff
+
+  home_claim:
+    description: This flow guides a user through filing a homeowner's claim
+    if: false #flow guard prevents flow from starting unless it is linked
+    steps:
+      - id: collect_claim_description
+        collect: claim_description
+        next: collect_incident_date
+      - id: collect_incident_date
+        collect: incident_date
+        next: collect_additional_claim_info
+      - id: collect_additional_claim_info
+        collect: additional_claim_info
+        next: action_claim_summary
       - id: action_claim_summary
         action: action_claim_summary
         next: collect_verify_claim

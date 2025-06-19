@@ -1,0 +1,280 @@
+test_results:
+
+- name: Check claim status - adjustor to be assigned
+  pass_status: true
+  expected_steps:
+  - user: "I want to check the status of a claim"
+    assertions:
+    - flow_started: "check_claim_status"
+    - bot_uttered:
+        utter_name: utter_ask_claim_number
+  - user: "CLAIM1234"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_acknowledge_claim_number
+    - action_executed: action_check_claim_status
+    - slot_was_set:
+      - name: "claim_status"
+        value: 0
+    - bot_uttered:
+        utter_name: utter_adjustor_to_assign
+    - flow_completed:
+        flow_id: "check_claim_status"
+
+- name: Check claim status - schedule appointment
+  pass_status: true
+  expected_steps:
+  - user: "I want to check the status of a claim"
+    assertions:
+    - flow_started: "check_claim_status"
+    - bot_uttered:
+        utter_name: utter_ask_claim_number
+  - user: "CLAIM1236"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_acknowledge_claim_number
+    - action_executed: action_check_claim_status
+    - slot_was_set:
+      - name: "claim_status"
+        value: 2
+    - bot_uttered:
+        utter_name: utter_ask_schedule_inspection
+  - user: "Yes"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_inspection_date
+  - user: "Thursday or Friday in the afternoon"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_acknowledge_inspection_scheduled
+    - flow_completed:
+        flow_id: "check_claim_status"
+
+- name: test pattern search
+  pass_status: true
+  expected_steps:
+  - user: "What is a deductible?"
+    assertions:
+    - generative_response_is_grounded:
+        threshold: 0.90
+        ground_truth: "A deductible is the amount of money you are responsible for paying out-of-pocket before your insurance coverage begins to pay. For example, if you have a $1,000 deductible and a covered claim for $10,000 in damages, you would pay the first $1,000, and your insurer would pay the remaining $9,000."
+  - utter: utter_can_do_something_else
+  - user: "Does my insurance cover me if I drive someone else's car?"
+    assertions:
+    - flow_completed:
+        flow_id: "pattern_search"
+    - generative_response_is_grounded:
+        threshold: 0.90
+        ground_truth: "In the US, insurance typically follows the car first. So, if you borrow a friend's car and have an accident, their auto insurance would be the primary coverage. Your own insurance may act as secondary coverage if their policy limits are exceeded. However, this can vary, so you should always check your policy details."
+
+- name: File auto claim correct date
+  pass_status: true
+  expected_steps:
+  - user: "I want to file a claim"
+    assertions:
+    - flow_started: "file_a_claim"
+    - action_executed: action_list_policies
+  - user: /SetSlots(policy_name=Car, policy_num=9738813)
+    assertions:
+    - slot_was_set:
+      - name: "policy_num"
+        value: "9738813"
+      - name: "policy_name"
+        value: "Car"
+    - flow_started: "auto_claim"
+    - bot_uttered:
+        utter_name: utter_ask_claim_description
+  - user: "Someone rear-ended me at a traffic light"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_incident_date
+  - user: "12/25/2024"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_incident_time
+  - user: "Arpund 3pm"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_incident_location
+  - user: "Times square"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_additional_claim_info
+        text_matches: Please write the contact details of any witnesses and the number of police report if available.
+  - user: "John Doe, 454554"
+    assertions:
+    - action_executed: action_claim_summary
+    - bot_uttered:
+        utter_name: utter_ask_verify_claim_details
+        text_matches: Does everything look correct?
+        buttons:
+        - title: Yes
+          payload: /SetSlots(verify_claim_details=true)
+        - title: No
+          payload: /SetSlots(verify_claim_details=false)
+  - user: /SetSlots(verify_claim_details=true)
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_claim_submission
+  - user: "Sure"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_claim_submitted
+    - flow_completed:
+        flow_id: "auto_claim"
+    - flow_started: "pattern_completed"
+
+- name: File auto claim with human handoff
+  pass_status: true
+  expected_steps:
+  - user: "I want to file a claim"
+    assertions:
+    - flow_started: "file_a_claim"
+    - action_executed: action_list_policies
+  - user: /SetSlots(policy_name=Car, policy_num=9738813)
+    assertions:
+    - slot_was_set:
+      - name: "policy_num"
+        value: "9738813"
+      - name: "policy_name"
+        value: "Car"
+    - flow_started: "auto_claim"
+    - bot_uttered:
+        utter_name: utter_ask_claim_description
+  - user: "Someone rear-ended me at a traffic light"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_incident_date
+  - user: "12/25/2024"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_incident_time
+  - user: "Arpund 3pm"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_incident_location
+  - user: "Times square"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_additional_claim_info
+        text_matches: Please write the contact details of any witnesses and the number of police report if available.
+  - user: "John Doe, 454554"
+    assertions:
+    - action_executed: action_claim_summary
+    - bot_uttered:
+        utter_name: utter_ask_verify_claim_details
+        text_matches: Does everything look correct?
+        buttons:
+        - title: Yes
+          payload: /SetSlots(verify_claim_details=true)
+        - title: No
+          payload: /SetSlots(verify_claim_details=false)
+  - user: "No"
+    assertions:
+    - flow_completed:
+        flow_id: "auto_claim"
+    - flow_started: "pattern_human_handoff"
+
+- name: File home claim correct date
+  pass_status: true
+  expected_steps:
+  - user: "I want to file a claim"
+    assertions:
+    - flow_started: "file_a_claim"
+    - action_executed: action_list_policies
+  - user: "/SetSlots(policy_name=Homeowner, policy_num=9738812)"
+    assertions:
+    - slot_was_set:
+      - name: "policy_num"
+        value: "9738812"
+      - name: "policy_name"
+        value: "Homeowner"
+    - flow_started: "home_claim"
+    - bot_uttered:
+        utter_name: utter_ask_claim_description
+  - user: "There is a leak in my roof"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_incident_date
+  - user: "12/25/2024"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_additional_claim_info
+  - user: "Nothing else"
+    assertions:
+    - action_executed: action_claim_summary
+    - bot_uttered:
+        utter_name: utter_ask_verify_claim_details
+        text_matches: Does everything look correct?
+        buttons:
+        - title: Yes
+          payload: /SetSlots(verify_claim_details=true)
+        - title: No
+          payload: /SetSlots(verify_claim_details=false)
+  - user: /SetSlots(verify_claim_details=true)
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_claim_submission
+  - user: "Sure"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_claim_submitted
+    - flow_completed:
+        flow_id: "home_claim"
+    - flow_started: "pattern_completed"
+
+- name: File home claim with human handoff
+  pass_status: true
+  expected_steps:
+  - user: "I want to file a claim"
+    assertions:
+    - flow_started: "file_a_claim"
+    - action_executed: action_list_policies
+  - user: "/SetSlots(policy_name=Homeowner, policy_num=9738812)"
+    assertions:
+    - slot_was_set:
+      - name: "policy_num"
+        value: "9738812"
+      - name: "policy_name"
+        value: "Homeowner"
+    - flow_started: "home_claim"
+    - bot_uttered:
+        utter_name: utter_ask_claim_description
+  - user: "There is a leak in my roof"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_incident_date
+  - user: "12/25/2024"
+    assertions:
+    - bot_uttered:
+        utter_name: utter_ask_additional_claim_info
+  - user: "Nothing else"
+    assertions:
+    - action_executed: action_claim_summary
+    - bot_uttered:
+        utter_name: utter_ask_verify_claim_details
+        text_matches: Does everything look correct?
+        buttons:
+        - title: Yes
+          payload: /SetSlots(verify_claim_details=true)
+        - title: No
+          payload: /SetSlots(verify_claim_details=false)
+  - user: "No"
+    assertions:
+    - flow_completed:
+        flow_id: "home_claim"
+    - flow_started: "pattern_human_handoff"
+
+- name: out of scope topics
+  pass_status: true
+  expected_steps:
+  - user: "can you help me book a hotel or restaurant"
+    assertions:
+    - flow_started: "pattern_cannot_handle"
+    - bot_uttered:
+        utter_name: "utter_cannot_handle"
+  - user: "can we discuss politics"
+    assertions:
+    - flow_started: "pattern_cannot_handle"
+    - bot_uttered:
+        utter_name: "utter_cannot_handle"

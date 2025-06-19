@@ -1,0 +1,106 @@
+test_cases:
+  - test_case: File auto claim correct date
+    steps:
+    - user: "I want to file a claim"
+      assertions:
+        - flow_started: "file_a_claim"
+        - action_executed: action_list_policies
+    - user: /SetSlots(policy_name=Car, policy_num=9738813)
+      assertions:
+        - slot_was_set:
+          - name: "policy_num"
+            value: "9738813"
+          - name: "policy_name"
+            value: "Car"
+        - flow_started: "auto_claim"
+        - bot_uttered:
+            utter_name: utter_ask_claim_description
+    - user: "Someone rear-ended me at a traffic light"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_ask_incident_date
+    - user: "12/25/2024"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_ask_incident_time
+    - user: "Arpund 3pm"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_ask_incident_location
+    - user: "Times square"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_ask_additional_claim_info
+            text_matches: Please write the contact details of any witnesses and the number of police report if available.
+    - user: "John Doe, 454554"
+      assertions:
+        - action_executed: action_claim_summary
+        - bot_uttered:
+            utter_name: utter_ask_verify_claim_details
+            text_matches: Does everything look correct?
+            buttons:
+            - title: Yes
+              payload: /SetSlots(verify_claim_details=true)
+            - title: No
+              payload: /SetSlots(verify_claim_details=false)
+    - user: /SetSlots(verify_claim_details=true)
+      assertions:
+        - bot_uttered:
+            utter_name: utter_ask_claim_submission
+    - user: "Sure"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_claim_submitted
+        - flow_completed: 
+            flow_id: "auto_claim"
+        - flow_started: "pattern_completed"
+  
+  - test_case: File auto claim with human handoff
+    steps:
+    - user: "I want to file a claim"
+      assertions:
+        - flow_started: "file_a_claim"
+        - action_executed: action_list_policies
+    - user: /SetSlots(policy_name=Car, policy_num=9738813)
+      assertions:
+        - slot_was_set:
+          - name: "policy_num"
+            value: "9738813"
+          - name: "policy_name"
+            value: "Car"
+        - flow_started: "auto_claim"
+        - bot_uttered:
+            utter_name: utter_ask_claim_description
+    - user: "Someone rear-ended me at a traffic light"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_ask_incident_date
+    - user: "12/25/2024"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_ask_incident_time
+    - user: "Arpund 3pm"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_ask_incident_location
+    - user: "Times square"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_ask_additional_claim_info
+            text_matches: Please write the contact details of any witnesses and the number of police report if available.
+    - user: "John Doe, 454554"
+      assertions:
+        - action_executed: action_claim_summary
+        - bot_uttered:
+            utter_name: utter_ask_verify_claim_details
+            text_matches: Does everything look correct?
+            buttons:
+            - title: Yes
+              payload: /SetSlots(verify_claim_details=true)
+            - title: No
+              payload: /SetSlots(verify_claim_details=false)
+    - user: "No"
+      assertions:
+        - flow_completed: 
+            flow_id: "auto_claim"
+        - flow_started: "pattern_human_handoff"

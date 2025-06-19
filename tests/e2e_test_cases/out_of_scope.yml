@@ -1,0 +1,13 @@
+test_cases:
+  - test_case: out of scope topics
+    steps:
+    - user: "can you help me book a hotel or restaurant"
+      assertions:
+        - flow_started: "pattern_cannot_handle"
+        - bot_uttered:
+              utter_name: "utter_cannot_handle"
+    - user: "can we discuss politics"
+      assertions:
+        - flow_started: "pattern_cannot_handle"
+        - bot_uttered:
+              utter_name: "utter_cannot_handle"

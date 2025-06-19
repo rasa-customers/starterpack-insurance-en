@@ -1,0 +1,47 @@
+test_cases:
+  - test_case: Check claim status - adjustor to be assigned
+    steps: 
+    - user: "I want to check the status of a claim"
+      assertions:
+        - flow_started: "check_claim_status"
+        - bot_uttered:
+            utter_name: utter_ask_claim_number
+    - user: "CLAIM1234"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_acknowledge_claim_number
+        - action_executed: action_check_claim_status
+        - slot_was_set:
+          - name: "claim_status"
+            value: 0
+        - bot_uttered:
+            utter_name: utter_adjustor_to_assign
+        - flow_completed:
+            flow_id: "check_claim_status"
+  - test_case: Check claim status - schedule appointment
+    steps: 
+    - user: "I want to check the status of a claim"
+      assertions:
+        - flow_started: "check_claim_status"
+        - bot_uttered:
+            utter_name: utter_ask_claim_number
+    - user: "CLAIM1236"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_acknowledge_claim_number
+        - action_executed: action_check_claim_status
+        - slot_was_set:
+          - name: "claim_status"
+            value: 2
+        - bot_uttered:
+            utter_name: utter_ask_schedule_inspection
+    - user: "Yes"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_ask_inspection_date
+    - user: "Thursday or Friday in the afternoon"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_acknowledge_inspection_scheduled
+        - flow_completed:
+            flow_id: "check_claim_status"

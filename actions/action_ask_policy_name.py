@@ -2,9 +2,9 @@ from rasa_sdk import Action
 from rasa_sdk.events import SlotSet
 import pandas as pd
 
-class ActionAskPolicyName(Action):
+class ActionAskPolicyNum(Action):
     def name(self):
-        return "action_ask_policy_name"
+        return "action_ask_policy_num"
 
     def run(self, dispatcher, tracker, domain):
         #Load CSV file
@@ -25,7 +25,7 @@ class ActionAskPolicyName(Action):
                 print(policy, policy_num)
                 buttons.append(
                     {
-                        "title": policy,
+                        "title": f"{policy} ({policy_num})",
                         "payload": f"/SetSlots(policy_name={policy}, policy_num={str(policy_num)})"
                     }
                 )
