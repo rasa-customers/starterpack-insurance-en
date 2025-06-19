@@ -157,21 +157,21 @@ Here's a brief description of the directories and files in the project root:
 
 # Features and bot content explanation
 In this project you will find:
- - **Actions** : custom actions, mimic getting information from a DB, either adding it to the session start or afterwards in the conversation. They are also used to generate dynamic buttons based on the content in the DB. This behaviour is done using 3 CSVs in the DB folder.
- - **RAG** :through Rasa's enterprise search policy to answer informational question from the user based on the docs in the docs folder.
- - **Data**
-    - **Flows** : are built to handle transactional user queries. This assistant had two main flows: "file a claim" and "check claim status" which are divided in sub-flows. Different features are used : calling or linking a flow, branching on a slot value, etc.
-    - **Patterns** : Rasa assistants use patterns (pre-built flow templates) to handle conversation repair and some system behaviour. In this assistant we override some patterns, to change the standard behavior. When editing patterns make sure you keep the same pattern name.
- - **Documents** : have general information on the two policy types covered. These will be used by enterprise search to provide RAG based answers.
- - **Domain** : contains all bot responses, slot definitions and custom actions
-  - **Responses** : There are responses that contain buttons, images as well as standard responses.
-  - **Slots** : different slot type and mapping
-    - **type** : Float, text, bool and categorical
-    - **mappings** : from_llm, and controlled
+ - **Actions**: custom actions, mimic getting information from a DB, either adding it to the session start or afterwards in the conversation. They are also used to generate dynamic buttons based on the content in the DB. This behaviour is done using 3 CSVs in the DB folder.
+ - **RAG**: through Rasa's enterprise search policy to answer informational question from the user based on the docs in the docs folder.
+ - **Data**:
+    - **Flows**: are built to handle transactional user queries. This assistant had two main flows: "file a claim" and "check claim status" which are divided in sub-flows. Different features are used : calling or linking a flow, branching on a slot value, etc.
+    - **Patterns**: Rasa assistants use patterns (pre-built flow templates) to handle conversation repair and some system behaviour. In this assistant we override some patterns, to change the standard behavior. When editing patterns make sure you keep the same pattern name.
+ - **Documents**: have general information on the two policy types covered. These will be used by enterprise search to provide RAG based answers.
+ - **Domain**: contains all bot responses, slot definitions and custom actions
+  - **Responses**: There are responses that contain buttons, images as well as standard responses.
+  - **Slots**: different slot type and mapping
+    - **type**: Float, text, bool and categorical
+    - **mappings**: from_llm, and controlled
     - **validation**: carry out validation to ensure slot value matches required format
- - **Images** : These images are used in the README
- - **Prompts** : This is an edited verion of the standard rephraser prompt. You can edit this to change the personality of the assistant.
- - **Tests** : this is a good way to test the bot's capabilities and ensure the same behavior when doing changes and updates. With Assertions we can track commands and when slots are set. Results of the current tests are available in the tests folder to illustrate how e2e testing works. You can mimic the results by running the command `rasa test e2e tests/e2e_test_cases -o` 
+ - **Images**: These images are used in the README
+ - **Prompts**: This is an edited verion of the standard rephraser prompt. You can edit this to change the personality of the assistant.
+ - **Tests**: this is a good way to test the bot's capabilities and ensure the same behavior when doing changes and updates. With Assertions we can track commands and when slots are set. Results of the current tests are available in the tests folder to illustrate how e2e testing works. You can mimic the results by running the command `rasa test e2e tests/e2e_test_cases -o` 
  - **Config**: We have two sections, the pipeline and the policies
      - the pipeline we have `CompactLLMCommandGenerator` that will convert user messages into commands, we add the LLM we want to use here
      - the policies: two policies are used in this assistant the `FlowPolicy` and the `EnterpriseSearchPolicy`
