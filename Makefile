@@ -11,7 +11,7 @@ CONFIG ?= config
 
 # Variables
 HOMEBREW_INSTALL_SCRIPT := https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
-PYTHON_VERSION := 3.11.11`
+PYTHON_VERSION := 3.11.11
 RASA_VERSION := 3.12.13
 RASA_STUDIO_URL := <your studio URL>
 RASA_STUDIO_ASSISTANT_NAME := starterpack-insurance-en
