@@ -34,7 +34,7 @@ Here's a brief description of the directories and files in the project root:
   - **domain:** Contains domain files for the assistant.
   - **prompts**: Contains Jinja2 template files for generating prompts.
   - **tests:** Contains end-to-end test scenarios for the assistant where each subdirectory reflects a suite of tests (i.e. happy path).
-  - **Config:** Contains multiple configuration components for the assistant (i.e. different language models and settings). If Intents are needed then we need the NLU pipeline for it(tokennizer, featurizer, intent classifier ..) and **NLUCommandAdaptor** will be the component that will start a flow based on the intent prediction.
+  - **configs:** Contains the config file. The file contains multiple configuration components for the assistant (i.e. different language models and settings). If Intents are needed then we need the NLU pipeline for it(tokennizer, featurizer, intent classifier ..) and **NLUCommandAdaptor** will be the component that will start a flow based on the intent prediction. You can add new config files in the folder and specify when training which to use 
   - **Credentials**: Contains credentials for various services used by the Rasa assistant (i.e. Chat Widget)
   - **Endpoints**: Contains endpoint configurations for the Rasa assistant. 
     - How to run the action server is added
@@ -202,7 +202,7 @@ Our docs provide an [Installation Overview](https://rasa.com/docs/pro/installati
 ```
   Make sure this environment is always active when you are testing or building the assistant.
 
-- Train the Rasa model: `rasa train -d domain`
+- Train the Rasa model: `rasa train -d domain -c configs/config.yml`
 
 # Running the Bot
 - To run the bot you can use `rasa inspect --debug`
