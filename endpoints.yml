@@ -9,10 +9,44 @@
 
 # Server which runs your custom actions.
 # https://rasa.com/docs/rasa-pro/concepts/custom-actions
-
 action_endpoint:
   actions_module: "actions"
-  # url: http://localhost:5055/webhook #You can use url endpoint to have a separate action server for debugging
+  # You can use url endpoint to have a separate action server for debugging
+  # url: http://localhost:5055/webhook
+
+# Allow and what LLM handles rephrasing of responses
+nlg:
+  type: rephrase
+  llm:
+    model_group: gpt-4o-mini
+  prompt: prompts/rephraser_demo_personality_prompt.jinja2
+
+# Model Groups - Integrate with different LLM providers
+# https://rasa.com/docs/reference/config/components/llm-configuration/#model-groups
+# e.g. https://platform.openai.com/docs/models
+model_groups:
+  - id: openai-gpt-4o
+    models:
+      - provider: openai
+        model: gpt-4o-2024-11-20
+        timeout: 7
+        temperature: 0.0
+        top_p: 0.0
+  - id: gpt-4o-mini
+    models:
+      - provider: openai
+        model: gpt-4o-mini-2024-07-18
+        temperature: 0.3
+# If using mistral-large, remember to set the environment variable MISTRAL_API_KEY
+# https://rasa.com/docs/reference/config/components/llm-configuration/#mistral
+  - id: mistral-large
+    models:
+      - provider: mistral
+        model: mistral-large-2411
+#  - id: openai_embeddings
+#   models:
+#     - provider: openai
+#       model: text-embedding-ada-002
 
 # Tracker store which is used to store the conversations.
 # By default the conversations are stored in memory.
@@ -41,35 +75,3 @@ action_endpoint:
 #  username: username
 #  password: password
 #  queue: queue
-
-# The lines below activate contextual rephrasing, using the default OpenAI language model.
-# Ensure the OPENAI_API_KEY is set to prevent any missing API key errors.
-# For more details, refer to the documentation:
-# https://rasa.com/docs/rasa-pro/concepts/contextual-response-rephraser
-# To enable the rephraser, remove the comment symbols in the lines below.
-
-nlg:
-  type: rephrase
-  llm:
-    model_group: gpt-4o-mini
-  prompt: prompts/rephraser_demo_personality_prompt.jinja2
-  rephrase_all: False
-
-model_groups:
-  - id: openai-gpt-4o
-    models:
-      - provider: openai
-        model: gpt-4o-2024-11-20
-        request_timeout: 7
-        max_tokens: 256
-  # If using mistral-large, remember to set the environment variable MISTRAL_API_KEY 
-  # More information here: https://rasa.com/docs/pro/tutorial#setup
-  - id: mistral-large
-    models:
-      - provider: mistral
-        model: mistral-large-2411
-  - id: gpt-4o-mini
-    models:
-      - provider: openai
-        model: gpt-4o-mini-2024-07-18
-        temperature: 0.3

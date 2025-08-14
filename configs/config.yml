@@ -3,7 +3,8 @@ language: en
 pipeline:
 - name: CompactLLMCommandGenerator
   llm:
-    model_group: openai-gpt-4o   #you can change the model group to mistral-large to test how different models work
+    # You can change the model group to mistral-large to test how different models work
+    model_group: openai-gpt-4o
 
 policies:
 - name: FlowPolicy
