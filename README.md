@@ -64,7 +64,7 @@ Here's a brief description of the directories and files in the project root:
   - **Bot**: Where did the incident happen?
   - **User**: Times square
   - **Bot**: Please write the contact details of any witnesses and the number of police report if available.
-  - **User**: Contact: John Smith +1 100200300
+  - **User**: Contact: John Smith (555) 010-0000
   - **Bot**: Here is a summary of your claim:
         Policy # 9738813
         Car insurance
@@ -72,7 +72,7 @@ Here's a brief description of the directories and files in the project root:
         Date: 12/24/2024
         Time: 3pm
         Location: Times square
-        Additional information: Contact: John Smith +1 100200300
+        Additional information: Contact: John Smith (555) 010-0000
         Does everything look correct?
   - **User**: Yes
   - **Bot**: Thank you. Shall I submit this claim for you?
@@ -105,7 +105,7 @@ Here's a brief description of the directories and files in the project root:
   - **Bot**: Where did the incident happen?
   - **User**: Times square
   - **Bot**: Please write the contact details of any witnesses and the number of police report if available.
-  - **User**: Contact: John Smith +1 100200300
+  - **User**: Contact: John Smith (555) 010-0000
   - **Bot**: Here is a summary of your claim:
         Policy # 9738813
         Car insurance
@@ -113,7 +113,7 @@ Here's a brief description of the directories and files in the project root:
         Date: 12/24/2024
         Time: 3pm
         Location: Times square
-        Additional information: Contact: John Smith +1 100200300
+        Additional information: Contact: John Smith (555) 010-0000
         Does everything look correct?
   - **User**: Yes
   - **Bot**: Thank you. Shall I submit this claim for you?
