@@ -186,7 +186,7 @@ In this project you will find:
 - Before You Begin
 - Setting Environment Variables for Rasa
 - Install Docker
-- Download Rasa Telecom Starter Pack
+- Download Rasa Insurance Starter Pack
 - Starting the Demo Assistant
 <br>
 
@@ -263,16 +263,16 @@ You'll need to save your **Rasa Pro license key** and **OpenAI API key** as envi
     1. `docker pull rasa/rasa-pro:3.13.7`
 <br>
 
-## Download Rasa Telecom Starter Pack
+## Download Rasa Insurance Starter Pack
 1. Download the Source Code Assets for the [latest release from GitHub](https://github.com/rasa-customers/starterpack-insurance-en/releases)
 2. Uncompress the assets in a local directory of your choice.
     1. The **starterpack-insurance-en** directory (created when uncompressed) contains a README file with additional instructions on installing dependencies, training the model, and running the assistant locally.
 3. Open your terminal (or PowerShell on Windows) and navigate to the directory where you uncompressed the **starterpack-insurance-en** files.
-Congratulations, you have successfully installed Rasa and are ready to use the Telecom Starter Pack as a demo or as a foundation for your custom flows.
+Congratulations, you have successfully installed Rasa and are ready to use the Insurance Starter Pack as a demo or as a foundation for your custom flows.
 <br>
 
 ## Starting the Demo Assistant
-To start up the Telecom Demo Assistant, ensure you're in the **starterpack-insurance-en** directory.
+To start up the Insurance Demo Assistant, ensure you're in the **starterpack-insurance-en** directory.
 1. **Train the Rasa model**
 2. **Start the Rasa Inspector** or
 3. **Start the Rasa Chat Widget**
@@ -282,7 +282,6 @@ To start up the Telecom Demo Assistant, ensure you're in the **starterpack-insur
 ```bash
 make model
 ```
-<br>
 
 You will find your trained model inside the `models/` directory.
 You can now test your assistant using the Rasa Inspector or Rasa Chat Widget.
