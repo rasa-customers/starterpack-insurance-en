@@ -20,9 +20,9 @@ This repository contains a Rasa chatbot designed to assist customers with filing
 This can be used as a starting point to create your own insurance assistant or get aideas on the features you may want to implement. It's free for you to copy and use locally.
 
 # Recommendations
-Before leveraging this assistant it is recommended you are familiar with Rasa's CALM framework. 
+Before leveraging this assistant it is recommended you are familiar with Rasa's CALM framework.
  - [Here](https://learning.rasa.com/rasa-pro/) you will find an introductory course to Rasa CALM.
- - [Here](https://www.classmarker.com/online-test/start/?quiz=bqd664cbca515357) you will find a developer certificatione exam.
+ - [Here](https://www.classmarker.com/online-test/start/?quiz=bqd664cbca515357) you will find a developer certification exam.
 
 # Project Structure
 Here's a brief description of the directories and files in the project root:
@@ -34,12 +34,13 @@ Here's a brief description of the directories and files in the project root:
   - **domain:** Contains domain files for the assistant.
   - **prompts**: Contains Jinja2 template files for generating prompts.
   - **tests:** Contains end-to-end test scenarios for the assistant where each subdirectory reflects a suite of tests (i.e. happy path).
-  - **configs:** Contains the config file. The file contains multiple configuration components for the assistant (i.e. different language models and settings). If Intents are needed then we need the NLU pipeline for it(tokennizer, featurizer, intent classifier ..) and **NLUCommandAdaptor** will be the component that will start a flow based on the intent prediction. You can add new config files in the folder and specify when training which to use 
-  - **Credentials**: Contains credentials for various services used by the Rasa assistant (i.e. Chat Widget)
-  - **Endpoints**: Contains endpoint configurations for the Rasa assistant. 
+  - **config.yml:** Contains configuration components for the assistant (e.g. different language models and settings).
+  - **credentials.yml**: Contains credentials for various services used by the Rasa assistant (i.e. Chat Widget)
+  - **endpoints.yml**: Contains endpoint configurations for the Rasa assistant.
     - How to run the action server is added
     - How to call NLG server
     - How to define the model group
+
 # Conversation example
 ##  **First example**:<br>Filing an auto insurance claim
   - **Bot**: Hey Serena 👋
@@ -63,7 +64,7 @@ Here's a brief description of the directories and files in the project root:
   - **Bot**: Where did the incident happen?
   - **User**: Times square
   - **Bot**: Please write the contact details of any witnesses and the number of police report if available.
-  - **User**: Contact: John John +1 100200300
+  - **User**: Contact: John Smith +1 100200300
   - **Bot**: Here is a summary of your claim:
         Policy # 9738813
         Car insurance
@@ -71,7 +72,7 @@ Here's a brief description of the directories and files in the project root:
         Date: 12/24/2024
         Time: 3pm
         Location: Times square
-        Additional information: Contact: John John +1 100200300
+        Additional information: Contact: John Smith +1 100200300
         Does everything look correct?
   - **User**: Yes
   - **Bot**: Thank you. Shall I submit this claim for you?
@@ -104,7 +105,7 @@ Here's a brief description of the directories and files in the project root:
   - **Bot**: Where did the incident happen?
   - **User**: Times square
   - **Bot**: Please write the contact details of any witnesses and the number of police report if available.
-  - **User**: Contact: John John +1 100200300
+  - **User**: Contact: John Smith +1 100200300
   - **Bot**: Here is a summary of your claim:
         Policy # 9738813
         Car insurance
@@ -112,7 +113,7 @@ Here's a brief description of the directories and files in the project root:
         Date: 12/24/2024
         Time: 3pm
         Location: Times square
-        Additional information: Contact: John John +1 100200300
+        Additional information: Contact: John Smith +1 100200300
         Does everything look correct?
   - **User**: Yes
   - **Bot**: Thank you. Shall I submit this claim for you?
@@ -132,7 +133,7 @@ Here's a brief description of the directories and files in the project root:
       We are assigning an adjustor to your case, it normally takes 24-48 h since submitting the claim.
       The adjustor will be assigned by 01/11/2025.
       Let me know if you would like to check your claim status or file a claim. I'll be here ready to help! 😊
-  - **User**: Sorry I meant CLAIM1236
+  - **User**: Sorry, I meant I want to check CLAIM1236
   - **Bot**: Thank you. I will check the claim status for you. One moment please.
       We are in the process of scheduling an inspection to see your damages.
       Would you like to submit dates and times for the inspection appointment?
@@ -171,49 +172,156 @@ In this project you will find:
     - **validation**: carry out validation to ensure slot value matches required format
  - **Images**: These images are used in the README
  - **Prompts**: This is an edited verion of the standard rephraser prompt. You can edit this to change the personality of the assistant.
- - **Tests**: this is a good way to test the bot's capabilities and ensure the same behavior when doing changes and updates. With Assertions we can track commands and when slots are set. Results of the current tests are available in the tests folder to illustrate how e2e testing works. You can mimic the results by running the command `rasa test e2e tests/e2e_test_cases -o` 
+ - **Tests**: this is a good way to test the bot's capabilities and ensure the same behavior when doing changes and updates. With Assertions we can track commands and when slots are set. Results of the current tests are available in the tests folder to illustrate how e2e testing works. You can mimic the results by running the command `rasa test e2e tests/e2e_test_cases -o`
  - **Config**: We have two sections, the pipeline and the policies
      - the pipeline we have `CompactLLMCommandGenerator` that will convert user messages into commands, we add the LLM we want to use here
      - the policies: two policies are used in this assistant the `FlowPolicy` and the `EnterpriseSearchPolicy`
 
-# Installation
-You can find [here](https://learning.rasa.com/pre-requisites/pre-requisites/) our Rasa enablement and step by step guide on how to install Rasa. <BR>
-Our docs provide an [Installation Overview](https://rasa.com/docs/pro/installation/overview/).
+<br><br><br>
+# Installation (Docker)
+> **Note:** You can find alternative installation methods in the [Rasa documentation](https://rasa.com/docs/pro/installation/overview).
+<br>
 
-## Prerequisites
-- Rasa licence for 3.12 +
-- Python 3.10 +
-- Point to the LLM provider in the endpoint.yml and config.yml 
-  it can be open AI, finetuned model or any other LLM provider see [here](https://rasa.com/docs/rasa-pro/concepts/components/llm-configuration-from-3-11)
+## Installation Steps
+- Before You Begin
+- Setting Environment Variables for Rasa
+- Install Docker
+- Download Rasa Telecom Starter Pack
+- Starting the Demo Assistant
+<br>
 
-## Set up 
-- Clone the repository:
+## Before You Begin
 
-  ```shell
-  git clone <rasa-customers/starterpack-insurance-en.git>
-  cd <rasa-customers/starterpack-insurance-en>
-  ```
+**To use this starter pack, you will need:**
+1. A free [Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request/). To get the free license use the link and complete the form. You’ll be emailed the license key. Store this somewhere safe as you’ll need it a bit later in the instructions below. The actual installation of the Rasa Pro platform will be performed during the installation steps described below.
+2. An API key from OpenAI (the default model provider for this starter pack, though CALM supports other LLMs, too).
+    - If you haven't already, sign up for an account on the OpenAI platform.
+    - Then, navigate to the [OpenAI Key Management](https://platform.openai.com/api-keys) (Dashboard > API keys) page and click on the "Create New Secret Key" button to initiate obtaining `<your-openai-api-key>`.
+3. A computer. Instructions are available for MacOS, Linux & Windows.
+> **Note for Windows users:**
+> If you don’t already have `make`, you’ll need to install it:
+>
+> - **Option 1:** Install [Chocolatey](https://chocolatey.org/install).
+>   👉 Open **PowerShell as Administrator** (Start → search "PowerShell" → right-click → *Run as Administrator*).
+>   Then run:
+>   ```powershell
+>   choco install make -y
+>   ```
+>   Verify with:
+>   ```powershell
+>   make --version
+>   ```
+>
+> - **Option 2:** Install [Git for Windows](https://git-scm.com/download/win), which includes Git Bash (and `make`).
+>   Open **Git Bash** instead of PowerShell to run your commands.
+<br>
 
-- Create and activate a virtual environment, you can use `venv` (built-in Python virtual environment) or any other virtual environment manager.
+## Setting Environment Variables for Rasa
 
-```shell
-  python -m venv venv
-  source venv/bin/activate  # On Windows: venv\Scripts\activate
+You'll need to save your **Rasa Pro license key** and **OpenAI API key** as environment variables so they can be used by the application.
+
+**MacOS, Linux**
+1. Open your terminal, and edit your shell config
+    - `nano ~/.zshrc` (or `~/.bashrc` if you’re using Linux bash)
+2. At the bottom of the file, add lines like this (replace the values with your actual keys):
+    - `export RASA_PRO_LICENSE=<your-rasa-pro-license-key>`
+    - `export OPENAI_API_KEY=sk-<your-openai-api-key>`
+    1. For example, it may look something like this:
+        - `RASA_PRO_LICENSE=etou948949theu`
+        - `OPENAI_API_KEY=sk-proj-ntehoitnhtnoe`
+3. Save the file (`CTRL+O`, `Enter`, `CTRL+X` in nano), then reload it
+    - `source ~/.zshrc`  (or `~/.bashrc` if you’re using Linux bash)
+4. Check that the variables are set:
+    - `echo $RASA_PRO_LICENSE`
+    - `echo $OPENAI_API_KEY`
+
+**Windows**
+1. Press `Win + S` and type `Environment Variables`, then select `Edit the system environment variables`.
+2. In the `System Properties` window, click `Environment Variables`.
+3. Under `User variables` (applies only to your user), click `New`.
+    1. For `Name`, enter: `RASA_PRO_LICENSE`
+    2. For `Value`, enter: `<your-rasa-pro-license-key>`
+4. Repeat for `OPENAI_API_KEY`.
+5. Click `OK` → `OK` to save and close all windows.
+6. Restart your terminal (PowerShell) so the new values load.
+7. Verify the variables are set (PowerShell):
+    1. `echo $env:RASA_PRO_LICENSE`
+    2. `echo $env:OPENAI_API_KEY`
+<br>
+
+## Install Docker
+1. Download & install docker:
+    - MacOS:   https://docs.docker.com/desktop/setup/install/mac-install/
+    - Linux:   https://docs.docker.com/engine/install/
+    - Windows: https://docs.docker.com/desktop/setup/install/windows-install/
+        - Use WSL 2 backend (not Hyper-V)
+3. Start Docker Desktop. Make sure Docker Desktop (the Docker daemon) is running before you run any commands.
+    - Windows: Follow prompted instructions for WSL (e.g. `wsl --update`)
+4. Verify Installation. Open your terminal (Mac/Linux shell, or PowerShell on Windows) and run:
+    1. `docker --version`
+5. Download the Rasa Pro Docker image. Open your terminal and run:
+    1. `docker pull rasa/rasa-pro:3.13.7`
+<br>
+
+## Download Rasa Telecom Starter Pack
+1. Download the Source Code Assets for the [latest release from GitHub](https://github.com/rasa-customers/starterpack-insurance-en/releases)
+2. Uncompress the assets in a local directory of your choice.
+    1. The **starterpack-insurance-en** directory (created when uncompressed) contains a README file with additional instructions on installing dependencies, training the model, and running the assistant locally.
+3. Open your terminal (or PowerShell on Windows) and navigate to the directory where you uncompressed the **starterpack-insurance-en** files.
+Congratulations, you have successfully installed Rasa and are ready to use the Telecom Starter Pack as a demo or as a foundation for your custom flows.
+<br>
+
+## Starting the Demo Assistant
+To start up the Telecom Demo Assistant, ensure you're in the **starterpack-insurance-en** directory.
+1. **Train the Rasa model**
+2. **Start the Rasa Inspector** or
+3. **Start the Rasa Chat Widget**
+<br>
+
+## 1. Train the Rasa model
+```bash
+make model
 ```
-  Make sure this environment is always active when you are testing or building the assistant.
+<br>
 
-- Train the Rasa model: `rasa train -d domain -c configs/config.yml`
+You will find your trained model inside the `models/` directory.
+You can now test your assistant using the Rasa Inspector or Rasa Chat Widget.
+<br><br>
 
-# Running the Bot
-- To run the bot you can use `rasa inspect --debug`
-- After any changes made to your data, domain folder or config file you need to retrain the bot running `rasa train -d domain` and if changes are made in the custom actions just re-run `rasa inspect --debug`
-- After adding changes, make sure to add `e2e test cases`, to do so
-  - Set `RASA_PRO_BETA_E2E_ASSERTIONS=true` environment variable before
-running the command.
-  - Install `pip install mlflow` when you use an LLM to generate the answer with enterprise search.
-  - Run `rasa test e2e <add path to the test folder> -o` to see how the bot is performing, `-o` to get the results.
-    For this project it will be `rasa test e2e tests/e2e_test_cases -o` in the tests folder you will then have two files
-      - `e2e_results_failed.yml` and `e2e_results_passed.yml`
+## 2. Start the Rasa Inspector
+```bash
+make inspect
+```
+1. Once you see the “Starting worker” message in your terminal, proceed to the next step.
+2. In your browser go to: http://localhost:5005/webhooks/socketio/inspect.html
+<br><br>
+
+## 3. Start the Rasa Chat Widget
+```bash
+make run
+```
+1. Once you see the “Starting worker” message in your terminal, proceed to the next step.
+2. Open Finder (Mac) or File Explorer (Windows).
+3. Navigate to the chatwidget directory inside the **starterpack-insurance-en** folder you uncompressed earlier.
+4. Double-click `chatwidget/index.html` to open the demo in your browser.
+5. You can now interact with the Telco Demo Assistant using Rasa’s chat widget.
+<br><br>
+> [!TIP]
+> You can also edit chatwidget/index.html to customize the look and behavior of the demo.
+
+> [!NOTE]
+> For a full list of Rasa CLI commands refer to: https://rasa.com/docs/reference/api/command-line-interface/#cheat-sheet
+<br>
+
+## Stopping the Demo Assistant
+1. To stop the Rasa server, return to the terminal window where it is running and press **Ctrl+C**.
+2. That's it, you’ve successfully run your first Rasa Assistant! You can now close the terminal window if you wish.
+<br>
+
+## Restarting the Demo Assistant
+1. Open your terminal and navigate to the **starterpack-insurance-en** directory.
+2. Then, follow the same steps from **Starting the Demo Assistant** to run the assistant again.
+<br>
 
 # Tips
 - Check our docs to understand all [Rasa primitives](https://rasa.com/docs/reference/primitives/)
@@ -223,11 +331,10 @@ running the command.
   - Always review the prompt in the logs to make sure the right flows and slots are available and check the conversation history to better understand the bot's behavior.
   - Search for `action_list` to see the command that was predicted by CALM, this will help you debug.
     For instance, it can be `action_list=StartFlow(file_claim)` or `action_list=SetSlot(customer_id, 123)`
-  - Search for `commands=` 
+  - Search for `commands=`
     For instance `commands=[StartFlowCommand(flow='file_claim')]`
   - Check the **tracker state** in the **inspector view**
   - Add `logging.info` to you custom actions to get more visibility.
-
 
 # Next Steps
 - You can extend the assistant's skills:

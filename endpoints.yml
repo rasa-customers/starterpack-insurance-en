@@ -19,7 +19,8 @@ nlg:
   type: rephrase
   llm:
     model_group: gpt-4o-mini
-  prompt: prompts/rephraser_demo_personality_prompt.jinja2
+  # To override the default rephraser prompt
+  #prompt: prompts/rephraser_demo_personality_prompt.jinja2
 
 # Model Groups - Integrate with different LLM providers
 # https://rasa.com/docs/reference/config/components/llm-configuration/#model-groups
@@ -39,10 +40,10 @@ model_groups:
         temperature: 0.3
 # If using mistral-large, remember to set the environment variable MISTRAL_API_KEY
 # https://rasa.com/docs/reference/config/components/llm-configuration/#mistral
-  - id: mistral-large
-    models:
-      - provider: mistral
-        model: mistral-large-2411
+#  - id: mistral-large
+#    models:
+#      - provider: mistral
+#        model: mistral-large-2411
 #  - id: openai_embeddings
 #   models:
 #     - provider: openai
