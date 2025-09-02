@@ -1,0 +1,23 @@
+recipe: default.v1
+language: en
+# Unique identifier for your assistant that helps differentiate between multiple deployed assistants (Required).
+assistant_id: 20250613-142913-blocking-regression
+
+# The pipeline lists the components that process the latest user message and produce commands for the conversation (Required).
+pipeline:
+- name: SearchReadyLLMCommandGenerator
+  llm:
+    # You can change the model group to mistral-large to test how different models work
+    model_group: openai-gpt-4o
+  flow_retrieval:
+    active: false
+
+# The policies list the dialogue policies your assistant will use to progress the conversation (FlowPolicy required for CALM).
+policies:
+- name: FlowPolicy
+- name: EnterpriseSearchPolicy
+  vector_store:
+    type: "faiss"
+    source: "./docs"
+  llm:
+    model_group: gpt-4o-mini
