@@ -174,7 +174,7 @@ In this project you will find:
  - **Prompts**: This is an edited verion of the standard rephraser prompt. You can edit this to change the personality of the assistant.
  - **Tests**: this is a good way to test the bot's capabilities and ensure the same behavior when doing changes and updates. With Assertions we can track commands and when slots are set. Results of the current tests are available in the tests folder to illustrate how e2e testing works. You can mimic the results by running the command `rasa test e2e tests/e2e_test_cases -o`
  - **Config**: We have two sections, the pipeline and the policies
-     - the pipeline we have `CompactLLMCommandGenerator` that will convert user messages into commands, we add the LLM we want to use here
+     - the pipeline we have `SearchReadyLLMCommandGenerator` that will convert user messages into commands, we add the LLM we want to use here
      - the policies: two policies are used in this assistant the `FlowPolicy` and the `EnterpriseSearchPolicy`
 
 <br><br><br>
