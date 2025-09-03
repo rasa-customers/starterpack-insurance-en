@@ -166,3 +166,7 @@ logs
 
 # Apple
 .DS_Store
+
+# Docker
+.config
+.keras
