@@ -173,7 +173,7 @@ test_results:
     assertions:
     - flow_completed:
         flow_id: "auto_claim"
-    - flow_started: "pattern_human_handoff"
+    - flow_started: "flow_speak_with_human"
 
 - name: File home claim correct date
   pass_status: true
@@ -263,7 +263,7 @@ test_results:
     assertions:
     - flow_completed:
         flow_id: "home_claim"
-    - flow_started: "pattern_human_handoff"
+    - flow_started: "flow_speak_with_human"
 
 - name: out of scope topics
   pass_status: true

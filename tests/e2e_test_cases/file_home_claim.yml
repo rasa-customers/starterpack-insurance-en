@@ -42,10 +42,10 @@ test_cases:
       assertions:
         - bot_uttered:
             utter_name: utter_claim_submitted
-        - flow_completed: 
+        - flow_completed:
             flow_id: "home_claim"
         - flow_started: "pattern_completed"
-  
+
   - test_case: File home claim with human handoff
     steps:
     - user: "I want to file a claim"
@@ -83,6 +83,6 @@ test_cases:
               payload: /SetSlots(verify_claim_details=false)
     - user: "No"
       assertions:
-        - flow_completed: 
+        - flow_completed:
             flow_id: "home_claim"
-        - flow_started: "pattern_human_handoff"
+        - flow_started: "flow_speak_with_human"

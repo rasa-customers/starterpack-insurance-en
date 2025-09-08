@@ -30,7 +30,7 @@ flows:
         next: END
       - id: inspection_schedule
         collect: schedule_inspection
-        next: 
+        next:
           - if: slots.schedule_inspection
             then: collect_inspection_date
           - else: END
@@ -42,15 +42,15 @@ flows:
         next: END
       - id: claim_accepted
         collect: claim_accepted_questions
-        next: 
+        next:
           - if: slots.claim_accepted_questions
             then: handoff
           - else: END
       - id: claim_rejected
         collect: claim_rejected_questions
-        next: 
+        next:
           - if: slots.claim_rejected_questions
             then: handoff
           - else: END
       - id: handoff
-        link: pattern_human_handoff
+        link: flow_speak_with_human

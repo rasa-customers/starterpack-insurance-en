@@ -1,7 +1,7 @@
 flows:
   file_a_claim:
     description: This flow helps a user file a claim
-    persisted_slots: #Slots whose value should be persisted after the flow ends. 
+    persisted_slots: #Slots whose value should be persisted after the flow ends.
       - policy_num
       - policy_name
     steps:
@@ -14,7 +14,7 @@ flows:
         next: collect_policy_name
       - id: collect_policy_name
         collect: policy_name #uses action_ask_policy_num to generate dynamic buttons
-        next: 
+        next:
           - if: slots.policy_name = 'Car'
             then: auto_flow
           - if: slots.policy_name = 'Homeowner'
@@ -52,7 +52,7 @@ flows:
         next: collect_verify_claim
       - id: collect_verify_claim
         collect: verify_claim_details
-        next: 
+        next:
           - if: slots.verify_claim_details
             then: collect_claim_submission
           - else: handoff
@@ -60,12 +60,12 @@ flows:
         collect: claim_submission
         next:
           - if: slots.claim_submission
-            then: 
+            then:
               - action: utter_claim_submitted
                 next: END
           - else: handoff
       - id: handoff
-        link: pattern_human_handoff
+        link: flow_speak_with_human
 
   home_claim:
     description: This flow guides a user through filing a homeowner's claim
@@ -85,7 +85,7 @@ flows:
         next: collect_verify_claim
       - id: collect_verify_claim
         collect: verify_claim_details
-        next: 
+        next:
           - if: slots.verify_claim_details
             then: collect_claim_submission
           - else: handoff
@@ -93,9 +93,9 @@ flows:
         collect: claim_submission
         next:
           - if: slots.claim_submission
-            then: 
+            then:
               - action: utter_claim_submitted
                 next: END
           - else: handoff
       - id: handoff
-        link: pattern_human_handoff
+        link: flow_speak_with_human

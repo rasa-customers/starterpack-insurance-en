@@ -1,0 +1,19 @@
+flows:
+  bot_challenge:
+    description: This flow clarifies that the user is talking to a chatbot, when the user ask if they are talking to a chatbot or a human
+    steps:
+      - action: utter_bot_challenge
+  flow_speak_with_human:
+    description: This flow is used to speak with a human representative
+    name: Speak with human representative
+    steps:
+      - action: utter_more_help_needed_handoff_pattern
+  flow_help:
+    name: help you
+    description: |
+      This flow addresses user inquiries about the assistant's capabilities.
+      It starts by acknowledging the user's request and providing a clear overview of
+      key skills and services. This helps users understand how the assistant can assist
+      them effectively.
+    steps:
+      - action: utter_help

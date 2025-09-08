@@ -1,4 +1,3 @@
-
 version: "3.1"
 
 actions:
@@ -30,7 +29,7 @@ responses:
   utter_fallback:
     - text: |
         I appreciate your question!
-        That's a bit outside my expertise, but I'm here to help if your internet is slow or if you need help understanding your bill.
+        That's a bit outside my expertise, but I'm here to help with filing new claims or checking the status of an existing claim.
         Would you like assistance with that?
       metadata:
         rephrase: true
@@ -48,3 +47,8 @@ responses:
   utter_connect_to_human:
     - text: |
         Let me connect you to our human support managers. They will help you further!
+
+  utter_help:
+    - text: "I am your Insurance assistant. I can help you file a new claim, or check the status of an existing claim."
+      metadata:
+        rephrase: True
