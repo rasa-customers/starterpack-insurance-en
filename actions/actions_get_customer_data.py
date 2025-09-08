@@ -1,16 +1,31 @@
-from rasa_sdk import Action
+from typing import Any, Dict, List, Text
+
+from rasa_sdk import Action, Tracker
+from rasa_sdk.executor import CollectingDispatcher
+from rasa_sdk.types import DomainDict
 from rasa_sdk.events import SlotSet
+
 import pandas as pd
 
 class ActionGetCustomerInfo(Action):
     def name(self):
         return "action_get_customer_info"
 
-    def run(self, dispatcher, tracker, domain):
+    async def run(
+        self,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: DomainDict,
+    ) -> List[Dict[Text, Any]]:
         #Load CSV file
         file_path = "db/customers.csv"  # get information from your DBs
         df = pd.read_csv(file_path)
         customer_id = tracker.get_slot("customer_id")
+
+        # Check if customer_id is None
+        if customer_id is None:
+            dispatcher.utter_message("Customer ID not provided.")
+            return []
 
         # Filter data for the given customer ID
         customer_info = df[df["customer_id"] == int(customer_id)]
@@ -27,7 +42,6 @@ class ActionGetCustomerInfo(Action):
         response = (f"Customer Details:\n"
                     f"First Name: {first_name}\n"
                     f"Last Name: {last_name}\n")
-
         #dispatcher.utter_message(response)
 
         # Set the retrieved name in a slot

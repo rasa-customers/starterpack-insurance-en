@@ -1,23 +1,36 @@
-from rasa_sdk import Action
-from rasa_sdk.events import SlotSet
+from typing import Any, Dict, List, Text
+
+from rasa_sdk import Action, Tracker
+from rasa_sdk.executor import CollectingDispatcher
+from rasa_sdk.types import DomainDict
+
 import pandas as pd
 
 class ActionAskPolicyNum(Action):
     def name(self):
         return "action_ask_policy_num"
 
-    def run(self, dispatcher, tracker, domain):
+    async def run(
+        self,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: DomainDict,
+    ) -> List[Dict[Text, Any]]:
         #Load CSV file
         file_path = "db/policies.csv"  # get information from your DBs
         df = pd.read_csv(file_path)
         customer_id = tracker.get_slot("customer_id")
 
         # Filter data for the given customer ID
+        # Check if customer_id is valid
+        if customer_id is None:
+            dispatcher.utter_message("I don't have your customer ID. Please provide your customer ID to view your policies.")
+            return []
         customer_info = df[df["customer_id"] == int(customer_id)]
         policies = customer_info['policy_type']
         policy_nums = customer_info['policy_num']
 
-        if policies.empty:
+        if len(policies) == 0:
             dispatcher.utter_message(text="No policies found.")
         else:
             buttons = []
