@@ -39,14 +39,10 @@ responses:
       I'm an AI assistant designed to assist you quickly and efficiently.
       If you ever need to speak with a human agent, just let me know!
 
-  utter_more_help_needed_handoff_pattern: # add more information here, if you need this to connect to specific channel..
+  utter_more_help_needed_handoff_pattern:
     - text: |
             Please hold on while I connect you to our expert 📲
       image: "https://cdn-icons-png.flaticon.com/512/1042/1042127.png"
-
-  utter_connect_to_human:
-    - text: |
-        Let me connect you to our human support managers. They will help you further!
 
   utter_help:
     - text: "I am your Insurance assistant. I can help you file a new claim, or check the status of an existing claim."
