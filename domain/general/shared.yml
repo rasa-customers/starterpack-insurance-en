@@ -48,3 +48,6 @@ responses:
     - text: "I am your Insurance assistant. I can help you file a new claim, or check the status of an existing claim."
       metadata:
         rephrase: True
+
+  utter_can_do_something_else:
+  - text: Let me know if you would like to check your claim status or file a claim. I'll be here ready to help! 😊
