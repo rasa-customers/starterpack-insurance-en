@@ -37,6 +37,12 @@ flows:
         next: collect_incident_date
       - id: collect_incident_date
         collect: incident_date
+        # Describes the slot for the LLM command generator so it extracts the date
+        # robustly (any phrasing) when this step is active. (It still asks for the
+        # date rather than mining it from the free-text claim description.)
+        description: >-
+          the calendar date the incident or damage happened (e.g. 03/25/2026),
+          which the user may give as a relative date such as "last Tuesday"
         next: collect_incident_time
       - id: collect_incident_time
         collect: incident_time
@@ -52,12 +58,24 @@ flows:
         next: collect_verify_claim
       - id: collect_verify_claim
         collect: verify_claim_details
+        # Guides the command generator so a bare "yes"/"no" maps to this boolean
+        # instead of being read as a request to start a new claim.
+        description: >-
+          whether the user confirms the claim summary shown is correct. Set to
+          true for affirmatives such as "yes", "correct", or "looks good"; set
+          to false for negatives such as "no", "that's wrong", or "incorrect".
+          A negative means the summarized details are wrong, not that the user
+          wants to file a different claim.
         next:
           - if: slots.verify_claim_details
             then: collect_claim_submission
           - else: handoff
       - id: collect_claim_submission
         collect: claim_submission
+        description: >-
+          whether the user agrees to submit the claim. Set to true for
+          affirmatives such as "yes", "sure", or "go ahead"; set to false for
+          negatives such as "no", "not yet", or "cancel".
         next:
           - if: slots.claim_submission
             then:
@@ -76,6 +94,10 @@ flows:
         next: collect_incident_date
       - id: collect_incident_date
         collect: incident_date
+        # See auto_claim note: describes the slot for the command generator.
+        description: >-
+          the calendar date the incident or damage happened (e.g. 03/25/2026),
+          which the user may give as a relative date such as "last Tuesday"
         next: collect_additional_claim_info
       - id: collect_additional_claim_info
         collect: additional_claim_info
@@ -85,12 +107,24 @@ flows:
         next: collect_verify_claim
       - id: collect_verify_claim
         collect: verify_claim_details
+        # Guides the command generator so a bare "yes"/"no" maps to this boolean
+        # instead of being read as a request to start a new claim.
+        description: >-
+          whether the user confirms the claim summary shown is correct. Set to
+          true for affirmatives such as "yes", "correct", or "looks good"; set
+          to false for negatives such as "no", "that's wrong", or "incorrect".
+          A negative means the summarized details are wrong, not that the user
+          wants to file a different claim.
         next:
           - if: slots.verify_claim_details
             then: collect_claim_submission
           - else: handoff
       - id: collect_claim_submission
         collect: claim_submission
+        description: >-
+          whether the user agrees to submit the claim. Set to true for
+          affirmatives such as "yes", "sure", or "go ahead"; set to false for
+          negatives such as "no", "not yet", or "cancel".
         next:
           - if: slots.claim_submission
             then:

@@ -1,0 +1,80 @@
+# Regression coverage for the incident_date validation loop: dates typed in any
+# reasonable format must normalize to canonical MM/DD/YYYY and let the flow
+# advance, instead of being rejected by a strict regex (the old bug).
+test_cases:
+  - test_case: incident date already canonical mm/dd/yyyy
+    steps:
+    - user: "I want to file a claim"
+      assertions:
+        - flow_started: "file_a_claim"
+    - user: "/SetSlots(policy_name=Car, policy_num=9738813)"
+      assertions:
+        - flow_started: "auto_claim"
+    - user: "Someone rear-ended me at a traffic light"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_ask_incident_date
+    - user: "06/30/2026"
+      assertions:
+        - slot_was_set:
+          - name: incident_date
+            value: "06/30/2026"
+        - bot_uttered:
+            utter_name: utter_ask_incident_time
+
+  - test_case: incident date without leading zero normalizes
+    steps:
+    - user: "I want to file a claim"
+    - user: "/SetSlots(policy_name=Car, policy_num=9738813)"
+    - user: "Someone rear-ended me at a traffic light"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_ask_incident_date
+    - user: "6/30/2026"
+      assertions:
+        - slot_was_set:
+          - name: incident_date
+            value: "06/30/2026"
+        - bot_uttered:
+            utter_name: utter_ask_incident_time
+
+  - test_case: incident date in ISO format normalizes
+    steps:
+    - user: "I want to file a claim"
+    - user: "/SetSlots(policy_name=Car, policy_num=9738813)"
+    - user: "Someone rear-ended me at a traffic light"
+      assertions:
+        - bot_uttered:
+            utter_name: utter_ask_incident_date
+    - user: "2026-06-30"
+      assertions:
+        - slot_was_set:
+          - name: incident_date
+            value: "06/30/2026"
+        - bot_uttered:
+            utter_name: utter_ask_incident_time
+
+  # Describing the incident (which may mention a date in passing) must not
+  # trigger a date rejection before the user is even asked: validate_incident_date
+  # runs when the step activates, and must no-op while the slot is still empty.
+  - test_case: narrative description does not trigger premature date rejection
+    steps:
+    - user: "I want to file a claim"
+    - user: "/SetSlots(policy_name=Homeowner, policy_num=9738812)"
+    - user: "There was a storm last Tuesday with a lot of hail and wind. I'm pretty sure my roof was damaged."
+      assertions:
+        - bot_uttered:
+            utter_name: utter_ask_incident_date
+    - user: "06/30/2026"
+      assertions:
+        - slot_was_set:
+          - name: incident_date
+            value: "06/30/2026"
+        - bot_uttered:
+            utter_name: utter_ask_additional_claim_info
+
+# Note: relative phrases ("last Tuesday", "yesterday") ARE supported by
+# validate_incident_date (resolved against the current date), but they are not
+# asserted here: a bare one-word answer is sometimes routed by the LLM to
+# EnterpriseSearchPolicy instead of the collect step, which would make the test
+# flaky. The relative-resolution logic is covered by unit-level checks instead.

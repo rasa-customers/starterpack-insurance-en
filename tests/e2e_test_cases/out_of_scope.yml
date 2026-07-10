@@ -1,13 +1,16 @@
 test_cases:
+  # The pipeline uses SearchReadyLLMCommandGenerator + EnterpriseSearchPolicy, so
+  # out-of-domain requests are routed to enterprise search (pattern_search), which
+  # replies with a grounded refusal rather than triggering pattern_cannot_handle.
   - test_case: out of scope topics
     steps:
     - user: "can you help me book a hotel or restaurant"
       assertions:
-        - flow_started: "pattern_cannot_handle"
-        - bot_uttered:
-              utter_name: "utter_cannot_handle"
+        - flow_started: "pattern_search"
+        - flow_completed:
+            flow_id: "pattern_search"
     - user: "can we discuss politics"
       assertions:
-        - flow_started: "pattern_cannot_handle"
-        - bot_uttered:
-              utter_name: "utter_cannot_handle"
+        - flow_started: "pattern_search"
+        - flow_completed:
+            flow_id: "pattern_search"

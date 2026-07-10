@@ -1,20 +1,37 @@
 # Your Rasa version
-RASA_VERSION := 3.16.0
+RASA_VERSION := 3.17.1
+
+# Port used by `make chat` to serve the chat widget
+CHAT_PORT := 8000
+
+# Default e2e test path. Override to run a subset, e.g.
+#   make test TEST_PATH="tests/e2e_test_cases/check_claim_status.yml"
+TEST_PATH ?= tests/
+
+# Load secrets (RASA_LICENSE, OPENAI_API_KEY) from a local .env if present, then
+# export them so they reach the docker `-e` flags below. .env is gitignored.
+# Format: plain KEY=value lines (no `export`, no surrounding quotes).
+-include .env
+# Rasa expects RASA_LICENSE; accept RASA_PRO_LICENSE as an alias if that's what's set.
+RASA_LICENSE ?= $(RASA_PRO_LICENSE)
+export
 
 #####
 # Utility targets for help and variable inspection
 ECHO := @echo
 
 # List phony targets
-.PHONY: print-variables clean model inspect run test help $(HELP_CMDS)
+.PHONY: print-variables clean stop model inspect run chat test help $(HELP_CMDS)
 
 # Help (cross-platform)
-HELP_CMDS := help model inspect run clean test print-variables
+HELP_CMDS := help model inspect run chat clean stop test print-variables
 HELP_help    := Show available targets
 HELP_model   := Train and validate the Rasa model
-HELP_inspect := Inspect the Rasa model (debug/logging)
-HELP_run     := Start Rasa server (API enabled)
+HELP_inspect := Launch Inspector + Rasa + actions and open it in the browser
+HELP_run     := Start the Rasa server only (API enabled, no UI)
+HELP_chat    := Launch chat widget + Rasa + actions and open it in the browser
 HELP_clean   := Remove build artifacts
+HELP_stop    := Stop and remove lingering rasa-pro containers from this project
 HELP_test    := Run end-to-end tests on the Rasa model
 HELP_print-variables := Print all Makefile variables
 # Print help text at parse time when `make help` is called
@@ -39,6 +56,8 @@ ifeq ($(OS), Windows_NT)
   .SHELLFLAGS := -NoProfile -Command
   MKDIR_LOG = powershell -NoProfile -Command "New-Item -ItemType Directory -Force logs | Out-Null"
   CLEAN_LOGS = powershell -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue .rasa\*, models\*, logs\*; Get-ChildItem -Recurse -Include *.pyc,*.pyo -Force | Remove-Item -Force -ErrorAction SilentlyContinue; Get-ChildItem -Recurse -Filter '*~' -Force | Remove-Item -Force -ErrorAction SilentlyContinue"
+  # Force-remove any containers created from this project's rasa-pro image.
+  STOP_CONTAINERS = $$ids = docker ps -aq --filter "ancestor=rasa/rasa-pro:$(RASA_VERSION)"; if ($$ids) { docker rm -f $$ids } else { Write-Host "No rasa-pro containers to remove." }
   define RASA_DOCKER_MODEL
     docker run --rm -v "$${PWD}:/app" \
       -e RASA_LICENSE=$$env:RASA_LICENSE \
@@ -46,17 +65,23 @@ ifeq ($(OS), Windows_NT)
       rasa/rasa-pro:$(RASA_VERSION) $(1)
   endef
   define RASA_DOCKER
-    docker run -v "$${PWD}:/app" -p 5005:5005 \
+    docker run --rm -v "$${PWD}:/app" -p 5005:5005 \
       -e RASA_LICENSE=$$env:RASA_LICENSE \
       -e OPENAI_API_KEY=$$env:OPENAI_API_KEY \
       rasa/rasa-pro:$(RASA_VERSION) $(1)
   endef
+  # `make chat` pre-launch: serve the widget, then open it after a short delay.
+  CHAT_PRELAUNCH = Start-Process python -ArgumentList '-m','http.server','$(CHAT_PORT)','--directory','chatwidget' -WindowStyle Hidden; Start-Job { Start-Sleep 10; Start-Process 'http://localhost:$(CHAT_PORT)' } | Out-Null;
+  # `make inspect` pre-launch: open the Inspector after a short delay.
+  INSPECT_PRELAUNCH = Start-Job { Start-Sleep 10; Start-Process 'http://localhost:5005/webhooks/inspector/inspect.html' } | Out-Null;
 # MacOS and Linux
 else
   SHELL := /bin/bash
   .SHELLFLAGS := -eu -o pipefail -c
   MKDIR_LOG = mkdir -p logs
   CLEAN_LOGS = rm -rf .rasa/* models/* logs/* || true; find . -type f \( -name '*.py[co]' -o -name '*~' \) -delete
+  # Force-remove any containers created from this project's rasa-pro image.
+  STOP_CONTAINERS = ids=$$(docker ps -aq --filter ancestor=rasa/rasa-pro:$(RASA_VERSION)); if [ -n "$$ids" ]; then docker rm -f $$ids; else echo "No rasa-pro containers to remove."; fi
   define RASA_DOCKER_MODEL
     docker run --rm \
       --user $$(id -u):$$(id -g) \
@@ -66,7 +91,7 @@ else
       rasa/rasa-pro:$(RASA_VERSION) $(1)
   endef
   define RASA_DOCKER
-    docker run\
+    docker run --rm \
       --user $$(id -u):$$(id -g) \
       -v "$$(pwd):/app" \
       -p 5005:5005 \
@@ -74,6 +99,14 @@ else
       -e OPENAI_API_KEY="$$OPENAI_API_KEY" \
       rasa/rasa-pro:$(RASA_VERSION) $(1)
   endef
+  # Pick the right "open URL" command: open on macOS, xdg-open on Linux.
+  OPEN_URL := $(shell command -v open >/dev/null 2>&1 && echo open || echo xdg-open)
+  # `make chat` pre-launch: serve the widget in the background, open it once the
+  # Rasa server answers on :5005 (so the greeting fires), and stop the widget
+  # server on exit. Ends with `&` so the docker run that follows is foreground.
+  CHAT_PRELAUNCH = python3 -m http.server $(CHAT_PORT) --directory chatwidget >logs/widget.log 2>&1 & WIDGET_PID=$$!; trap 'kill $$WIDGET_PID 2>/dev/null' EXIT INT TERM; ( for _ in $$(seq 1 90); do curl -sf -o /dev/null http://localhost:5005/ && break; sleep 1; done; $(OPEN_URL) "http://localhost:$(CHAT_PORT)" ) &
+  # `make inspect` pre-launch: open the Inspector once Rasa answers on :5005.
+  INSPECT_PRELAUNCH = ( for _ in $$(seq 1 90); do curl -sf -o /dev/null http://localhost:5005/ && break; sleep 1; done; $(OPEN_URL) "http://localhost:5005/webhooks/inspector/inspect.html" ) &
 endif
 
 #####
@@ -82,16 +115,23 @@ clean:
 	$(ECHO) "Cleaning files..."
 	$(CLEAN_LOGS)
 
+# Stop and remove any lingering rasa-pro containers started by run/chat/inspect.
+# The interactive runner uses --rm so containers normally clean themselves up;
+# this is a safety net for orphans (e.g. a hard kill that skipped --rm).
+stop:
+	$(ECHO) "Removing rasa-pro:$(RASA_VERSION) containers..."
+	@$(STOP_CONTAINERS)
+
 # Train and validate the Rasa model
 model:
 	$(ECHO) "Training Rasa model..."
 	$(call RASA_DOCKER_MODEL, train)
 
-# Start Rasa Inspector with logging enabled
+# Start the Rasa Inspector (Rasa server + in-process actions) and open it.
 inspect:
-	$(ECHO) "Starting Rasa Inspector with logging..."
+	$(ECHO) "Starting Rasa Inspector (Rasa + in-process actions). Ctrl+C to stop..."
 	@$(MKDIR_LOG)
-	$(call RASA_DOCKER, inspect --debug --log-file logs/logs.out)
+	@$(INSPECT_PRELAUNCH) $(call RASA_DOCKER, inspect --debug --log-file logs/logs.out)
 
 # Start the Rasa server with logging enabled
 run:
@@ -99,7 +139,18 @@ run:
 	@$(MKDIR_LOG)
 	$(call RASA_DOCKER, run --debug --log-file logs/logs.out --enable-api --cors "*")
 
-# Run end-to-end tests on the Rasa model
+# Start everything for the demo in one command: the Rasa server (with in-process
+# actions) plus the chat widget, then open the widget once Rasa is ready.
+# Ctrl+C stops both.
+chat:
+	$(ECHO) "Starting chat widget + Rasa (with in-process actions). Ctrl+C to stop..."
+	@$(MKDIR_LOG)
+	@$(CHAT_PRELAUNCH) $(call RASA_DOCKER, run --debug --log-file logs/logs.out --enable-api --cors "*")
+
+# Run end-to-end tests on the Rasa model (override TEST_PATH to run a subset).
+# Uses the ephemeral runner (--rm, no published port): `rasa test` runs
+# conversations in-process, so it doesn't need port 5005 and won't collide with
+# a `make run`/`make chat`/`make inspect` server running in another terminal.
 test:
 	$(ECHO) "Testing Rasa model..."
-	$(call RASA_DOCKER, test e2e tests/)
+	$(call RASA_DOCKER_MODEL, test e2e $(TEST_PATH))

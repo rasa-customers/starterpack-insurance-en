@@ -4,6 +4,7 @@ actions:
  - action_list_policies
  - action_ask_policy_num
  - action_claim_summary
+ - validate_incident_date
 
 slots:
   policy_name:
@@ -22,10 +23,9 @@ slots:
     type: text
     mappings:
     - type: from_llm
-    validation:
-      rejections:
-        - if: not (slots.incident_date matches "^(0[1-9]|1[0,1,2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d{2}$")
-          utter: utter_invalid_date
+    # No declarative regex here: the from_llm mapping stores the date in whatever
+    # format the user typed, so a strict regex just looped. validate_incident_date
+    # parses and normalizes it to MM/DD/YYYY (and rejects unparseable input).
   incident_time:
     type: text
     mappings:
@@ -54,7 +54,7 @@ responses:
   utter_ask_claim_description:
     - text: Could you please describe what happened and what caused the damage?
   utter_ask_incident_date:
-    - text: What was the exact date of the incident? Please use mm/dd/yyyy format.
+    - text: What was the exact date of the incident? Please use mm/dd/yyyy format (for example, 03/25/2026).
   utter_ask_incident_time:
     - text: What was the exact time of the incident?
   utter_ask_incident_location:
@@ -90,7 +90,7 @@ responses:
         I have submitted your claim number 12345.
         An adjuster will be assigned to your claim 
   utter_invalid_date:
-    - text: Please provide the date in the format (mm/dd/yyyy)
+    - text: Sorry, I couldn't read that as a date. Please give the incident date in mm/dd/yyyy format, for example 03/25/2026.
   utter_ask_policy_name:
     - text: Please provide your policy name
   utter_invalid_policy:

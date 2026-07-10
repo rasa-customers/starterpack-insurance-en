@@ -31,14 +31,16 @@ model_groups:
     models:
       - provider: openai
         model: gpt-5.1-2025-11-13
-        timeout: 7
+        # gpt-5.1 is a reasoning model and routinely takes >7s; a short timeout
+        # caused APITimeoutError -> pattern_internal_error and flaky flows.
+        timeout: 30
         temperature: 0.0
-        top_p: 0.0
   - id: openai-gpt-5-mini
     models:
       - provider: openai
         model: gpt-5-mini-2025-08-07
-        temperature: 0.3
+        # gpt-5 models only support temperature=1 (the default); setting any
+        # other value raises an OpenAI UnsupportedParamsError, so leave it unset.
 # If using mistral-large, remember to set the environment variable MISTRAL_API_KEY
 # https://rasa.com/docs/reference/config/components/llm-configuration/#mistral
 #  - id: mistral-large
